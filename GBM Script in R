@@ -1,3 +1,11 @@
+library(dplyr)
+library(data.table)
+library(readxl)
+library(tidyverse)
+library(h2o)
+h2o.init(nthreads = 1, enable_assertions = F)
+
+
 # Import Fragile State Index Data https://fragilestatesindex.org/excel/
 FSI <- read_excel("/Users/scottclare/Desktop/Defence, Science and Technology Lab Essay/Conflict and Climate Change DSTL/Fragile State Index 2006-2020.xlsx")
 FSI <- FSI %>% 
