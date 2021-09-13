@@ -1,0 +1,219 @@
+# Import Fragile State Index Data https://fragilestatesindex.org/excel/
+FSI <- read_excel("/Users/scottclare/Desktop/Defence, Science and Technology Lab Essay/Conflict and Climate Change DSTL/Fragile State Index 2006-2020.xlsx")
+FSI <- FSI %>% 
+  rename(country = `Country`) %>% 
+  gather(key = year, value = Index, -`country`) %>% 
+  arrange(`country`, `country`)
+# Convert names to match
+FSI$country <- recode_factor(FSI$country, "Congo Democratic Republic" = "Congo, Dem. Rep",
+                             "Eygpt" = "Egypt, Arab Rep",
+                             "Gambia" = "Gambia, The",
+                             "Guinea Bissau" = "Guinea-Bissau",
+                             "Iran" = "Iran, Islamic Rep.",
+                             "Israel and West Bank" = "Israel",
+                             "Laos" = "Lao PDR",
+                             "Macedonia" = "North Macedonia",
+                             "North Korea" = "Korea, Dem. People’s Rep.",
+                             "Russia" = "Russian Federation",
+                             "South Korea" = "Korea, Rep.",
+                             "Syria" = "Syrian Arab Republic",
+                             "Venezuela" = "Venezuela, RB",
+                             "Yemen" = "Yemen, Rep.")
+FSI$country <- as.character(FSI$country)
+FSI$year <- as.numeric(FSI$year)
+
+# Import World Bank Population Data https://data.worldbank.org/indicator/SP.POP.TOTL
+pop <- read_excel("/Users/scottclare/Desktop/Job Application/Other Files/Geopolitical Risk Analysis/Conflict and Climate Change DSTL/API_SP.POP.TOTL_DS2_en_excel_v2_2252578.xls")
+pop <- pop %>% 
+  rename(country = `Country Name`) %>% 
+  gather(key = year, value = population, -`country`) %>% 
+  arrange(`country`, `country`) %>% 
+  filter(year > 2004) %>% 
+  filter(year < 2019)
+pop$year <- as.numeric(pop$year)
+pop$year <- pop$year +1
+pop$logpop <- log(pop$population)
+pop <- pop %>% select(-population)
+
+# Import World Bank Natural Disaster Data https://data.worldbank.org/indicator/VC.IDP.NWDS
+disaster <- read_excel("/Users/scottclare/Desktop/Job Application/Other Files/Geopolitical Risk Analysis/Conflict and Climate Change DSTL/API_VC.IDP.NWDS_DS2_en_excel_v2_2270385.xls")
+disaster <- disaster %>% 
+  rename(country = `Country Name`) %>% 
+  gather(key = year, value = displace, -`country`) %>% 
+  arrange(`country`, `country`) %>% 
+  filter(year > 2005) %>% 
+  filter(year < 2020)
+disaster$year <- as.numeric(disaster$year)
+
+# Import World Bank Population Growth Data https://data.worldbank.org/indicator/SP.POP.GROW
+pop_growth <- read_excel("/Users/scottclare/Desktop/Job Application/Other Files/Geopolitical Risk Analysis/Conflict and Climate Change DSTL/API_SP.POP.GROW_DS2_en_excel_v2_2253989.xls")
+pop_growth <- pop_growth %>% 
+  rename(country = `Country Name`) %>% 
+  gather(key = year, value = pop_growth, -`country`) %>% 
+  arrange(`country`, `country`) %>% 
+  filter(year > 2004) %>% 
+  filter(year < 2019)
+pop_growth$year <- as.numeric(pop_growth$year)
+pop_growth$year <- pop_growth$year +1
+
+# Import World Bank Population Density Data https://data.worldbank.org/indicator/EN.POP.DNST
+pop_density <- read_excel("/Users/scottclare/Desktop/Job Application/Other Files/Geopolitical Risk Analysis/Conflict and Climate Change DSTL/API_EN.POP.DNST_DS2_en_excel_v2_2255044.xls")
+pop_density <- pop_density %>% 
+  gather(key = year, value = pop_density, -`Country Name`) %>%
+  rename(country = `Country Name`) %>%
+  arrange(country, country) %>% 
+  filter(year > 2004) %>% 
+  filter(year < 2019)
+pop_density$year <- as.numeric(pop_density$year)
+pop_density$year <- pop_density$year + 1
+
+# Import World Bank Refugee Population Data https://data.worldbank.org/indicator/SM.POP.REFG
+refug <- read_excel("/Users/scottclare/Desktop/Job Application/Other Files/Geopolitical Risk Analysis/Conflict and Climate Change DSTL/API_SM.POP.REFG.OR_DS2_en_excel_v2_2256933.xls")
+refug<- refug %>% 
+  gather(key = year, value = refug_pop, -`Country Name`) %>% 
+  arrange(`Country Name`, `Country Name`) %>%
+  rename(country = `Country Name`) %>%
+  filter(year > 2004) %>%
+  filter(year < 2019)
+refug$year <- as.numeric(refug$year)
+refug$year <- refug$year +1
+
+# Import World Bank Unemployment Data https://data.worldbank.org/indicator/SL.UEM.TOTL.ZS
+unem <- read_excel("/Users/scottclare/Desktop/Job Application/Other Files/Geopolitical Risk Analysis/Conflict and Climate Change DSTL/API_SL.UEM.TOTL.ZS_DS2_en_excel_v2_2357075.xls")
+unem <- unem %>% 
+  gather(key = year, value = unem_rate, -`Country Name`) %>% 
+  rename(country = `Country Name`) %>% 
+  arrange(country, country) %>% 
+  filter(year > 2004) %>% 
+  filter(year < 2019)
+unem$year <- as.numeric(unem$year)
+unem$year <- unem$year + 1
+
+# Import World Bank GDP Growth Data https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG
+gdp_grow <- read_excel("/Users/scottclare/Desktop/Job Application/Other Files/Geopolitical Risk Analysis/Conflict and Climate Change DSTL/API_NY.GDP.MKTP.KD.ZG_DS2_en_excel_v2_2252047.xls")
+gdp_grow <- gdp_grow %>% 
+  gather(key = year, value = growth_rate, -`Country Name`) %>% 
+  rename(country = `Country Name`) %>% 
+  arrange(country, country) %>%
+  filter(year > 2004) %>%
+  filter(year < 2019)
+gdp_grow$year <- as.numeric(gdp_grow$year)
+gdp_grow$year <- gdp_grow$year + 1
+
+# Import World Bank Food Production Data https://data.worldbank.org/indicator/AG.PRD.FOOD.XD
+food_prod <- read_excel("/Users/scottclare/Desktop/Job Application/Other Files/Geopolitical Risk Analysis/Conflict and Climate Change DSTL/API_AG.PRD.FOOD.XD_DS2_en_excel_v2_2259830.xls")
+food_prod <- food_prod %>% 
+  gather(key = year, value = food_index, -`Country Name`) %>% 
+  rename(country = `Country Name`) %>%
+  arrange(country, country) %>% 
+  filter(year > 2004) %>% 
+  filter(year < 2019)
+food_prod$year <- as.numeric(food_prod$year)
+food_prod$year <- food_prod$year + 1
+
+# Import World Bank Agricultural Land Data https://data.worldbank.org/indicator/AG.LND.AGRI.ZS
+land_prod <- read_excel("/Users/scottclare/Desktop/Job Application/Other Files/Geopolitical Risk Analysis/Conflict and Climate Change DSTL/API_AG.LND.AGRI.ZS_DS2_en_excel_v2_2254003.xls")
+land_prod <- land_prod %>% 
+  gather(key = year, value = percent_land, -`Country Name`) %>% 
+  rename(country = `Country Name`) %>% 
+  arrange(country, country) %>% 
+  filter(year > 2004) %>% 
+  filter(year < 2019)
+land_prod$year <- as.numeric(land_prod$year)
+land_prod$year <- land_prod$year + 1
+
+# Import World Bank Urban Population Data https://data.worldbank.org/indicator/SP.URB.TOTL.IN.ZS
+urb_pop <- read_excel("/Users/scottclare/Desktop/Job Application/Other Files/Geopolitical Risk Analysis/Conflict and Climate Change DSTL/API_SP.URB.TOTL.IN.ZS_DS2_en_excel_v2_2252411.xls")
+urb_pop <- urb_pop %>% 
+  gather(key = year, value = pop_urb, -`Country Name`) %>% 
+  rename(country = `Country Name`) %>% 
+  arrange(country, country) %>% 
+  filter(year > 2004) %>% 
+  filter(year < 2019)
+urb_pop$year <- as.numeric(urb_pop$year)
+urb_pop$year <- urb_pop$year + 1
+
+# merge ind variables 
+FSI <- FSI %>% 
+  inner_join(pop, by = c("country", "year")) %>%
+  inner_join(pop_growth, by = c("country", "year")) %>% 
+  inner_join(pop_density, by = c("country", "year")) %>%
+  inner_join(refug, by = c("country", "year")) %>% 
+  inner_join(unem, by = c("country", "year")) %>%
+  inner_join(gdp_grow, by = c("country", "year")) %>% 
+  inner_join(food_prod, by = c("country", "year")) %>%
+  inner_join(land_prod, by = c("country", "year")) %>% 
+  inner_join(disaster, by = c("country", "year")) %>% 
+  inner_join(urb_pop, by = c("country", "year"))
+
+#Create train and test sets
+set.seed(123)
+ind <- sample(2, nrow(FSI), replace = T, prob = c(0.8, 0.2))
+train <- FSI[ind==1,]
+test <- FSI[ind==2,]
+rad_na <- train %>% summarise_all(~ sum(is.na(.)))
+
+# Convert train and test splits to H2O class
+train_h2o <- as.h2o(train)
+test_h2o <- as.h2o(test)
+predictors <- c("logpop", "pop_growth", "pop_density", "refug_pop", "unem_rate", "growth_rate", "food_index", "percent_land", "pop_urb")
+
+# GBM Hyperparameters
+gbm_params1 <- list(learn_rate = c(0.01, 0.1),
+                    max_depth = c(3, 5, 9),
+                    sample_rate = c(0.8, 1.0),
+                    col_sample_rate = c(0.2, 0.5, 1.0))
+
+# Parameter Grid Search
+gbm_FSI <- h2o.grid("gbm",
+                y = "Index",
+                x = predictors,
+                training_frame = train_h2o,
+                grid_id = "gbm_FSI",
+                hyper_params = gbm_params1,
+                ntrees = 100,
+                nfolds = 5,
+                seed = 500)
+
+# Sort Models
+RMSE_model <- h2o.getGrid(grid_id = "gbm_FSI",
+                        sort_by = "RMSE")
+RMSE_model
+
+best_RMSE <- h2o.getModel(RMSE_model@model_ids[[1]])
+model_perf <- h2o.performance(best_RMSE)
+model_perf
+
+# Predicting Kenya FSI in 2030
+Kenya_df <- data.frame(
+  country = "Kenya",
+  year = 2030,
+  logpop = 17.8,
+  pop_growth = 2,
+  pop_density = 120, 
+  refug_pop = 400000,
+  unem_rate = 10, 
+  growth_rate = -2.5,
+  food_index = 75,
+  percent_land = 25,
+  pop_urb = 45)
+
+Kenya_df <- as.h2o(Kenya_df)
+Kenya_prediction <- h2o.predict(best_RMSE, Kenya_df)
+Kenya_prediction
+
+# Model Explainablity
+h2o.varimp(best_RMSE)
+h2o.residual_analysis_plot(best_RMSE, train_h2o)
+h2o.shap_summary_plot(best_RMSE, train_h2o)
+h2o.pd_plot(best_RMSE, train_h2o, "percent_land")
+h2o.pd_plot(best_RMSE, train_h2o, "pop_urb")
+h2o.pd_plot(best_RMSE, train_h2o, "pop_density")
+h2o.pd_plot(best_RMSE, train_h2o, "pop_urb")
+h2o.pd_plot(best_RMSE, train_h2o, "food_index")
+h2o.pd_plot(best_RMSE, train_h2o, "growth_rate")
+h2o.pd_plot(best_RMSE, train_h2o, "unem_rate")
+h2o.pd_plot(best_RMSE, train_h2o, "refug_pop")
+h2o.pd_plot(best_RMSE, train_h2o, "logpop")
+h2o.pd_plot(best_RMSE, train_h2o, "pop_growth")
+
