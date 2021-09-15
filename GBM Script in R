@@ -196,15 +196,15 @@ model_perf
 Kenya_df <- data.frame(
   country = "Kenya",
   year = 2030,
-  logpop = 17.8,
-  pop_growth = 2,
-  pop_density = 120, 
-  refug_pop = 400000,
-  unem_rate = 10, 
-  growth_rate = -2.5,
-  food_index = 75,
-  percent_land = 25,
-  pop_urb = 45)
+  logpop = #insert hypothesised value#,
+  pop_growth = #insert hypothesised value#,
+  pop_density = #insert hypothesised value#, 
+  refug_pop = #insert hypothesised value#,
+  unem_rate = #insert hypothesised value#, 
+  growth_rate = #insert hypothesised value#,
+  food_index = #insert hypothesised value#,
+  percent_land = #insert hypothesised value#,
+  pop_urb = #insert hypothesised value#)
 
 Kenya_df <- as.h2o(Kenya_df)
 Kenya_prediction <- h2o.predict(best_RMSE, Kenya_df)
